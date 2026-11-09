@@ -168,6 +168,37 @@
      "match": "map updated"
     }
    ]
+  },
+  {
+   "id": "gg-gems",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/caves-gems.ss",
+   "desc": "Maxwell falling through a shaft of gems in the caves right of the Outpost: the counter slides in, leaves the game screen, and stays below the map with the last count",
+   "rules": [
+    "GG-2",
+    "GG-6"
+   ],
+   "shots": {
+    "pickup": 40,
+    "later": 300
+   },
+   "checks": [
+    {
+     "rule": "GG-6",
+     "what": "the counter below the map",
+     "type": "not_uniform",
+     "screen": "second",
+     "shot": "later",
+     "rect": [
+      440,
+      600,
+      600,
+      680
+     ],
+     "color": "000000",
+     "frac": 0.99
+    }
+   ]
   }
  ]
 }

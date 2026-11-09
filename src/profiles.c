@@ -4313,6 +4313,7 @@ static const char* sm3_compose(Emu* s, const void* state, uint32_t* out, int w, 
 /* Goodboy Galaxy (goodboy-galaxy.md) */
 #define GG_SCENE 0x03004CF0
 #define GG_PLANET 0x03000FC0
+#define GG_GEMS 0x020061C4 /* the gems collected (a word) */
 
 static const MapProfile profiles[] = {
 	{
@@ -6239,10 +6240,10 @@ static const MapProfile profiles[] = {
 		.open = { { K_START, 3 }, { 0, 30 }, { K_L, 3 }, { 0, 12 }, { K_L, 3 } },
 		.settleMax = 90, .openWithin = 80, .stableFrames = 1, .maxDiff = 40,
 		.crop_x = 0, .crop_y = 0, .crop_w = 240, .crop_h = 160,
-		/* map_crop: the page without its bottom row (the page bar with
-		 * L and R, the START button, MAPPED %): the map window's frame
-		 * and tabs end at row 125 (GG-2) */
-		.tight_x = 0, .tight_y = 0, .tight_w = 240, .tight_h = 126,
+		/* map_crop: the page's bottom row (the page bar with L and R,
+		 * the START button, MAPPED %) black, for the gem counter (GG-2,
+		 * GG-6): the map window's frame and tabs end at row 125 */
+		.glyphs = { { 0, 126, 240, 34, -1, { 0x000000 } } },
 		/* the blue tabs round the map window (beside their arrows: the
 		 * items and tasks pages have none of them below or at the
 		 * sides) and the map icon in the page bar, away from any text
@@ -6263,6 +6264,22 @@ static const MapProfile profiles[] = {
 		 * conversation): the logo, so the map isn't on both screens;
 		 * the map back as it closes (GG-5) */
 		.logoIf = { { GG_SCENE, 0, 0x08032941, 4 }, { 0x04000000, 0x6000, 0x2000, 2, true, 0x6000, true } },
+		.hud = {
+			/* the gem counter leaves the game screen while Maxwell can be
+			 * moved, the game's pause screen not up (GG-6): it slides down
+			 * into the top left corner as he picks up a gem and back up
+			 * about a second later. Its gem (8x8, palette 12,
+			 * at 3,4: it spins, tiles 144-159) and its count (a row of 8x16
+			 * sprites, tiles 160-202, palette 14, from 13,2), priority 0 */
+			.on = { { GG_SCENE, 0, 0x08032941, 4 }, { 0x04000000, 0x6000, 0, 2 } },
+			.objs = { { -64, -64, 200, 24, 144, 202, 0, (1u << 12) | (1u << 14) } },
+			.overMap = true,
+			.mapClear = 0x000000,
+			/* in the map picture's black bottom row, centred, as it was
+			 * last seen in place: taken again once the count (GG_GEMS)
+			 * has changed and the counter has held still in its corner */
+			.moves = { { 0, 0, 200, 24, 'C', 120, 'M', 142, .latch = GG_GEMS } },
+		},
 	},
 };
 
