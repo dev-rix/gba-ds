@@ -1,0 +1,173 @@
+{
+ "game": "Goodboy Galaxy",
+ "rules": "docs/games/goodboy-galaxy.md",
+ "cases": [
+  {
+   "id": "gg-logo",
+   "kind": "logo",
+   "rom": "2GBP",
+   "desc": "2GBP logo extraction",
+   "rules": [
+    "GEN-1",
+    "GG-1"
+   ],
+   "golden": [
+    "logo"
+   ]
+  },
+  {
+   "id": "gg-title",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/title.ss",
+   "desc": "the title with its file box: the logo, no map picture",
+   "rules": [
+    "GG-3"
+   ],
+   "shots": {
+    "title": 120
+   },
+   "checks": [
+    {
+     "rule": "GG-3",
+     "what": "no map picture",
+     "type": "no_log",
+     "match": "map updated"
+    }
+   ]
+  },
+  {
+   "id": "gg-outpost",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/outpost.ss",
+   "desc": "Maxwell at the Outpost, the first planet, then walking right: the Planet Map page without its bottom row",
+   "rules": [
+    "GG-2"
+   ],
+   "input": [
+    [
+     60,
+     "RIGHT"
+    ],
+    [
+     100,
+     "-"
+    ]
+   ],
+   "shots": {
+    "map": 50,
+    "walked": 200
+   },
+   "checks": [
+    {
+     "rule": "GG-2",
+     "what": "a map picture was shown",
+     "type": "log",
+     "match": "map updated"
+    },
+    {
+     "rule": "GG-2",
+     "what": "the map window, not the logo",
+     "type": "not_uniform",
+     "screen": "second",
+     "shot": "map",
+     "rect": [
+      200,
+      150,
+      820,
+      550
+     ],
+     "color": "303030",
+     "frac": 0.98
+    }
+   ]
+  },
+  {
+   "id": "gg-outpost-french",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/outpost-french.ss",
+   "desc": "the game in French (Mappemonde, L'avant-poste): the map is taken all the same",
+   "rules": [
+    "GG-2"
+   ],
+   "shots": {
+    "map": 50
+   },
+   "checks": [
+    {
+     "rule": "GG-2",
+     "what": "a map picture was shown",
+     "type": "log",
+     "match": "map updated"
+    }
+   ]
+  },
+  {
+   "id": "gg-outpost-pause",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/outpost.ss",
+   "desc": "the map taken, then the game's own pause screen opened (START): it stays on the game screen and the second screen shows the logo; closed again (START), the map comes back",
+   "rules": [
+    "GG-5"
+   ],
+   "input": [
+    [
+     100,
+     "START"
+    ],
+    [
+     104,
+     "-"
+    ],
+    [
+     320,
+     "START"
+    ],
+    [
+     324,
+     "-"
+    ]
+   ],
+   "shots": {
+    "before": 90,
+    "paused": 300,
+    "closed": 420
+   },
+   "checks": [
+    {
+     "rule": "GG-5",
+     "what": "the logo, idle, while paused",
+     "type": "uniform",
+     "screen": "second",
+     "shot": "paused",
+     "rect": [
+      80,
+      120,
+      240,
+      320
+     ],
+     "color": "303030"
+    }
+   ]
+  },
+  {
+   "id": "gg-outpost-conversation",
+   "rom": "2GBP",
+   "state": "goodboy-galaxy/outpost-conversation.ss",
+   "desc": "the Professor talking at the Outpost: no map picture taken (the logo, nothing taken before)",
+   "rules": [
+    "GG-4"
+   ],
+   "shots": {
+    "talking": 200
+   },
+   "checks": [
+    {
+     "rule": "GG-4",
+     "what": "no map picture",
+     "type": "no_log",
+     "match": "map updated"
+    }
+   ]
+  }
+ ]
+}

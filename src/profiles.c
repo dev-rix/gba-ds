@@ -4310,6 +4310,10 @@ static const char* sm3_compose(Emu* s, const void* state, uint32_t* out, int w, 
 	return "map button did nothing";
 }
 
+/* Goodboy Galaxy (goodboy-galaxy.md) */
+#define GG_SCENE 0x03004CF0
+#define GG_PLANET 0x03000FC0
+
 static const MapProfile profiles[] = {
 	{
 		.codes = { "A2CE" },
@@ -6211,6 +6215,54 @@ static const MapProfile profiles[] = {
 			.logoBelow = true,
 			.rows = GBA_H,
 		},
+	},
+	{
+		/* Goodboy Galaxy (2GBP, maker 00: the 2023 cartridge, one release
+		 * for every language). Its pause screen (START) has three pages,
+		 * L / R between them: the planet map, items, tasks; it opens on
+		 * the page it was left on. The map page: the map window (x 40-200,
+		 * y 20-115) with the place's name, MAPPED % bottom right; the
+		 * unexplored part of the window is a static that changes every
+		 * other frame (two frames alike, ~4500 pixels the next). Where the
+		 * game is: GG_SCENE (a word: 0x08032941 while Maxwell can be
+		 * moved, the map paused too; 0x08032927 in a conversation and the
+		 * scenes between planets; 0 at the title) and GG_PLANET (0 on the
+		 * title, the language list and the scenes between planets). */
+		.codes = { "2GBP" },
+		.title = "Goodboy Galaxy",
+		/* the title's lettering: sprites (with the stars under it, the
+		 * file box and NEW GAME / OPTIONS below): A on the language list
+		 * (English), A again to skip the intro (GG-1) */
+		.logo = { .steps = { { 0, 300 }, { K_A, 5 }, { 0, 200 }, { K_A, 5 }, { 0, 150 } }, .layer = 4, .maxY = 47 },
+		/* the map page (GG-2): START, then L twice (the page left open
+		 * in the hidden copy may be another) */
+		.open = { { K_START, 3 }, { 0, 30 }, { K_L, 3 }, { 0, 12 }, { K_L, 3 } },
+		.settleMax = 90, .openWithin = 80, .stableFrames = 1, .maxDiff = 40,
+		.crop_x = 0, .crop_y = 0, .crop_w = 240, .crop_h = 160,
+		/* map_crop: the page without its bottom row (the page bar with
+		 * L and R, the START button, MAPPED %): the map window's frame
+		 * and tabs end at row 125 (GG-2) */
+		.tight_x = 0, .tight_y = 0, .tight_w = 240, .tight_h = 126,
+		/* the blue tabs round the map window (beside their arrows: the
+		 * items and tasks pages have none of them below or at the
+		 * sides) and the map icon in the page bar, away from any text
+		 * (the menus are in nine languages); at full brightness (the
+		 * page fades in) */
+		.probes = { { 110, 120, 0x105AD6 }, { 130, 120, 0x105AD6 }, { 30, 55, 0x105AD6 }, { 210, 55, 0x105AD6 },
+		            { 110, 14, 0x105AD6 }, { 42, 148, 0x29CEB5 } },
+		.bgColor = 0x9418AD, .minForeground = 2000, .tolerance = 8,
+		/* the pause screen's display (the map page's: BG0, BG3, sprites,
+		 * both windows; the other pages have one window) */
+		.mem = { { 0x04000000, 0xFFFF, 0x7940, 2 } },
+		/* Maxwell can be moved (not in a conversation, GG-4), and the
+		 * game's own pause screen isn't up (its windows on: GG-5) */
+		.live = { { GG_SCENE, 0, 0x08032941, 4 }, { 0x04000000, 0x6000, 0, 2 } },
+		/* the title, the language list, between planets: the logo (GG-3) */
+		.menu = { { GG_PLANET, 0, 0, 4 } },
+		/* the game's own pause screen up (a window on, out of a
+		 * conversation): the logo, so the map isn't on both screens;
+		 * the map back as it closes (GG-5) */
+		.logoIf = { { GG_SCENE, 0, 0x08032941, 4 }, { 0x04000000, 0x6000, 0x2000, 2, true, 0x6000, true } },
 	},
 };
 
