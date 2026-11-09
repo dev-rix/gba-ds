@@ -108,7 +108,11 @@ def dump_error(case, rom):
                 tested = {}
                 for part in line.split(" · "):
                     m = re.search(r"`([A-Z0-9]{4})`", part)
-                    if m:
+                    if m and "none known" in part:
+                        # (no official dump listed, as for a game No-Intro
+                        # hasn't got: nothing to check the fixture against)
+                        tested[m.group(1)] = None
+                    elif m:
                         tested[m.group(1)] = set(re.findall(r"`([0-9a-f]{8})` \(tested\)", part))
         _testedDumps[rules] = tested
     tested = _testedDumps[rules]
@@ -116,6 +120,8 @@ def dump_error(case, rom):
         return None
     with zipfile.ZipFile(rom) as z:
         crcs = ["%08x" % i.CRC for i in z.infolist() if i.filename.lower().endswith(".gba")]
+    if tested.get(case["rom"][:4], set()) is None:
+        return None
     if crcs and crcs[0] in tested.get(case["rom"][:4], set()):  # (CODE+name: another dump of it)
         return None
     return "fixture roms/%s.zip (CRC32 %s) isn't the tested dump in %s's Dumps row (a patched ROM? tools/make_dumps.py)" % (
